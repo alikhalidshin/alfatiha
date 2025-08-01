@@ -201,13 +201,17 @@ app.post("/companies", async (req, res) => {
   try {
     const { companyEmail } = req.body;
 
-    const existingCompany = await CompanyModel.findOne({ companyEmail });
-
-    if (existingCompany) {
-      return res.status(409).json({
-        error: "Company already exists with this email",
-      });
-    }
+const existingCompany = await CompanyModel.findOne({
+  $or: [
+    { companyEmail: req.body.companyEmail },
+    { companyName: req.body.companyName }
+  ]
+});
+   if (existingCompany) {
+  return res.status(409).json({
+    error: "Company already exists with this email or name",
+  });
+}
 
     const newCompany = new CompanyModel(req.body);
     const savedCompany = await newCompany.save();
