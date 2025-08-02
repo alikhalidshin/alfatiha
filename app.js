@@ -17,6 +17,34 @@ mongoose.connect("mongodb+srv://shinalikhalid:7sionpfm9quOXQ47@basera.4o9xqkw.mo
 
 
 // 🧾 Schemas
+const fullAssessmentSchema = new mongoose.Schema({
+  companyName: String,
+  crNumber: String,
+  region: String,
+
+  isicSector: String,
+  employees: String,
+  businessAge: String,
+
+  revenueExpenses: String,
+
+  liquidityRatios: String,
+  deptRatios: String,
+  profitAbility: String,
+  operatingCashFlows: String,
+  contractsInfo: String,
+  ownershipStructure: String,
+  businessSector: String,
+
+  monthlyRevenue: String,
+  invoiceVolume: String,
+  paymentRate: String,
+  delays: String,
+  loans: String,
+  bankBalance: String,
+
+  createdAt: { type: Date, default: Date.now },
+});
 const newCompanySchema = new mongoose.Schema({
   companyEmail: { type: String, required: true, unique: true },
   username: { type: String, required: true, unique: true },
@@ -117,6 +145,7 @@ const companySchema = new mongoose.Schema({
 });
 
 // 📦 Models
+const AssessmentModel = mongoose.model("Assessment", fullAssessmentSchema);
 const CompanyModel = mongoose.model("Company", newCompanySchema);
 const UserModel = mongoose.model("User", userSchema);
 const ClientModel = mongoose.model("Client", clientSchema);
@@ -259,5 +288,27 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ error: "Internal server error during login." });
+  }
+});
+app.post("/submit-assessment", async (req, res) => {
+  try {
+    const newAssessment = new AssessmentModel(req.body);
+    const saved = await newAssessment.save();
+    res.status(201).json({
+      message: "Assessment submitted successfully",
+      data: saved,
+    });
+  } catch (error) {
+    console.error("Error saving assessment:", error);
+    res.status(500).json({ error: "Failed to save assessment" });
+  }
+});
+app.get("/assessments", async (req, res) => {
+  try {
+    const assessments = await AssessmentModel.find();
+    res.status(200).json({ data: assessments });
+  } catch (error) {
+    console.error("Error fetching assessments:", error);
+    res.status(500).json({ error: "Failed to fetch assessments" });
   }
 });
