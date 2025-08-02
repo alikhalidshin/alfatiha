@@ -229,26 +229,26 @@ app.post("/login", async (req, res) => {
   try {
     const { companyEmail, password } = req.body;
 
-    // ✅ التحقق من أن البيانات موجودة
+    // ✅ Validate that required fields are present
     if (!companyEmail || !password) {
-      return res.status(400).json({ error: "يرجى إدخال البريد الإلكتروني وكلمة المرور" });
+      return res.status(400).json({ error: "Please enter your email and password." });
     }
 
-    // 🔍 محاولة العثور على الشركة
+    // 🔍 Try to find the company by email
     const company = await CompanyModel.findOne({ companyEmail });
 
     if (!company) {
-      return res.status(404).json({ error: "الشركة غير موجودة" });
+      return res.status(404).json({ error: "Company not found." });
     }
 
-    // 🔐 التحقق من كلمة المرور (بدون تشفير)
+    // 🔐 Check if the password matches (not encrypted)
     if (company.password !== password) {
-      return res.status(401).json({ error: "كلمة المرور غير صحيحة" });
+      return res.status(401).json({ error: "Incorrect password." });
     }
 
-    // ✅ نجاح تسجيل الدخول
+    // ✅ Successful login
     res.status(200).json({
-      message: "تم تسجيل الدخول بنجاح",
+      message: "Login successful",
       company: {
         username: company.username,
         email: company.companyEmail,
@@ -258,6 +258,6 @@ app.post("/login", async (req, res) => {
 
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ error: "حدث خطأ داخلي أثناء تسجيل الدخول" });
+    res.status(500).json({ error: "Internal server error during login." });
   }
 });
