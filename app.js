@@ -226,29 +226,29 @@ const existingCompany = await CompanyModel.findOne({
   }
 });
 app.post("/login", async (req, res) => {
-
   try {
     const { companyEmail, password } = req.body;
 
-    console.log("#######################################################3333")
-    console.log(companyEmail,password)
-    console.log("######################################################################3333")
+    // ✅ التحقق من أن البيانات موجودة
+    if (!companyEmail || !password) {
+      return res.status(400).json({ error: "يرجى إدخال البريد الإلكتروني وكلمة المرور" });
+    }
 
-    // 🔍 تحقق من وجود الشركة بالبريد الإلكتروني
+    // 🔍 محاولة العثور على الشركة
     const company = await CompanyModel.findOne({ companyEmail });
 
     if (!company) {
-      return res.status(404).json({ error: "Company not found" });
+      return res.status(404).json({ error: "الشركة غير موجودة" });
     }
 
-    // 🔐 التحقق من كلمة السر
+    // 🔐 التحقق من كلمة المرور (بدون تشفير)
     if (company.password !== password) {
-      return res.status(401).json({ error: "Incorrect password" });
+      return res.status(401).json({ error: "كلمة المرور غير صحيحة" });
     }
 
     // ✅ نجاح تسجيل الدخول
     res.status(200).json({
-      message: "Login successful",
+      message: "تم تسجيل الدخول بنجاح",
       company: {
         username: company.username,
         email: company.companyEmail,
@@ -258,6 +258,6 @@ app.post("/login", async (req, res) => {
 
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ error: "Internal server error during login" });
+    res.status(500).json({ error: "حدث خطأ داخلي أثناء تسجيل الدخول" });
   }
 });
